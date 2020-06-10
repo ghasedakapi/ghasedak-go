@@ -31,7 +31,7 @@ func NewClient(apikey, linenumber string) Client {
 
 // Send simple sms
 func (c *Client) Send(msg, receptor string) Response {
-	route := "http://api.ghasedak.io/v2/sms/send/simple"
+	route := "http://api.ghasedak.io/v2/sms/send/simple?agent=go"
 	data := strings.NewReader(fmt.Sprintf(`message=%s&receptor=%s&linenumber=%s`,
 		msg, receptor, c.LineNumber))
 
