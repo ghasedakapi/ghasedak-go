@@ -73,3 +73,110 @@ func (c *Client) Send(msg, receptor string) Response {
 
 	return response
 }
+
+func (c *Client) SendOTP(receptor string, template string, code int) Response {
+	route := "http://api.ghasedak.io/v2/verification/send/simple?agent=go"
+
+	data := url.Values{}
+	data.Set("template", template)
+	data.Set("type", "1")
+	data.Set("receptor", receptor)
+	data.Set("linenumber", c.LineNumber)
+	data.Set("param1", strconv.Itoa(code))
+
+	req, err := http.NewRequest("POST", route, bytes.NewBuffer([]byte(data.Encode())))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
+	req.Header.Set("Apikey", c.APIKEY)
+	if err != nil {
+		log.Println(err)
+		return Response{Success: false, Message: err.Error()}
+	}
+	res, err := http.DefaultClient.Do(req)
+	if err != nil {
+		log.Printf("erro is -> %s", err.Error())
+		return Response{Success: false, Message: err.Error()}
+	}
+	defer res.Body.Close()
+
+	response := Response{}
+
+	if res.StatusCode == http.StatusOK {
+		response.Code = http.StatusOK
+		bodyBytes, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			log.Println(err)
+			return Response{Success: true, Message: err.Error()}
+		}
+		bodyString := string(bodyBytes)
+		response.Message = gjson.Get(bodyString, "result.message").String()
+		response.ID = gjson.Get(bodyString, "items.۰").Int()
+		response.Success = true
+
+		return response
+	}
+
+	bodyBytes, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return Response{Success: true, Message: err.Error()}
+	}
+	bodyString := string(bodyBytes)
+	fmt.Println(bodyString)
+	response.Code = res.StatusCode
+	response.Message = gjson.Get(bodyString, "result.message").String()
+	response.ID = gjson.Get(bodyString, "items.۰").Int()
+	response.Success = false
+
+	return response
+}
+
+func (c *Client) SendVoice(message string, receptor string, template string) Response {
+
+	route := "http://api.ghasedak.io/v2/verification/send/simple?agent=go"
+
+	v := url.Values{}
+	v.Set("template", template)
+	v.Set("apikey", c.APIKEY)
+	v.Set("receptor", receptor)
+	v.Set("message", message)
+
+	req, err := http.NewRequest("POST", route, bytes.NewBuffer([]byte(v.Encode())))
+	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=utf-8")
+	req.Header.Set("Apikey", c.APIKEY)
+	if err != nil {
+		log.Println(err)
+		return Response{Success: false, Message: err.Error()}
+	}
+	res, err := http.DefaultClient.Do(req)
+	defer res.Body.Close()
+
+	response := Response{}
+
+	if res.StatusCode == http.StatusOK {
+		response.Code = http.StatusOK
+		bodyBytes, err := ioutil.ReadAll(res.Body)
+		if err != nil {
+			log.Println(err)
+			return Response{Success: true, Message: err.Error()}
+		}
+		bodyString := string(bodyBytes)
+		response.Message = gjson.Get(bodyString, "result.message").String()
+		response.ID = gjson.Get(bodyString, "items.۰").Int()
+		response.Success = true
+
+		return response
+	}
+
+	bodyBytes, err := ioutil.ReadAll(res.Body)
+	if err != nil {
+		return Response{Success: true, Message: err.Error()}
+	}
+	bodyString := string(bodyBytes)
+	fmt.Println(bodyString)
+	response.Code = res.StatusCode
+	response.Message = gjson.Get(bodyString, "result.message").String()
+	response.ID = gjson.Get(bodyString, "items.۰").Int()
+	response.Success = false
+
+	return response
+}
+
