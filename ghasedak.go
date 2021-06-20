@@ -17,6 +17,7 @@ import (
 type Client struct {
 	APIKEY     string
 	LineNumber string
+	host       string
 }
 
 // Response type
@@ -29,12 +30,16 @@ type Response struct {
 
 // NewClient create new ghasedak client
 func NewClient(apikey, linenumber string) Client {
-	return Client{APIKEY: apikey, LineNumber: linenumber}
+	return Client{APIKEY: apikey, LineNumber: linenumber, host: "api.ghasedak.io"}
+}
+
+func (c *Client) SetHost(host string) {
+	c.host = host
 }
 
 // Send simple sms
 func (c *Client) Send(msg, receptor string) Response {
-	route := "http://api.ghasedak.io/v2/sms/send/simple?agent=go"
+	route := "http://" + c.host + "/v2/sms/send/simple?agent=go"
 	data := strings.NewReader(fmt.Sprintf(`message=%s&receptor=%s&linenumber=%s`,
 		msg, receptor, c.LineNumber))
 
@@ -78,7 +83,7 @@ func (c *Client) Send(msg, receptor string) Response {
 }
 
 func (c *Client) SendOTP(receptor string, template string, code int) Response {
-	route := "http://api.ghasedak.io/v2/verification/send/simple?agent=go"
+	route := "http://" + c.host + "/v2/verification/send/simple?agent=go"
 
 	data := url.Values{}
 	data.Set("template", template)
@@ -182,4 +187,3 @@ func (c *Client) SendVoice(message string, receptor string, template string) Res
 
 	return response
 }
-
