@@ -30,7 +30,7 @@ type Response struct {
 
 // NewClient create new ghasedak client
 func NewClient(apikey, linenumber string) Client {
-	return Client{APIKEY: apikey, LineNumber: linenumber, host: "api.ghasedak.io"}
+	return Client{APIKEY: apikey, LineNumber: linenumber, host: "api.ghasedak.me"}
 }
 
 func (c *Client) SetHost(host string) {
