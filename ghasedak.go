@@ -139,7 +139,7 @@ func (c *Client) SendOTP(receptor string, template string, code int) Response {
 
 func (c *Client) SendVoice(message string, receptor string, template string) Response {
 
-	route := "http://api.ghasedak.io/v2/verification/send/simple?agent=go"
+	route := "http://api.ghasedak.me/v2/verification/send/simple?agent=go"
 
 	v := url.Values{}
 	v.Set("template", template)
