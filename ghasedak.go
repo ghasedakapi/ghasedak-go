@@ -48,7 +48,6 @@ func (c *Client) Status(id string, itype string) Response {
 		log.Println(err)
 		return Response{Success: false, Message: err.Error()}
 	}
-
 	rq.Header.Set("Cache-Control", "no-cache")
 	rq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 	rq.Header.Set("Apikey", c.APIKEY)
@@ -70,10 +69,7 @@ func (c *Client) Status(id string, itype string) Response {
 			return Response{Success: true, Message: err.Error()}
 		}
 		bodyString := string(bodyBytes)
-		response.Message = string(bodyBytes)
-		log.Println(string(bodyBytes))
-		fmt.Println(string(bodyBytes))
-		//  gjson.Get(bodyString, "result.message").String()
+		response.Message = gjson.Get(bodyString, "result.message").String()
 		response.ID = gjson.Get(bodyString, "items.۰").Int()
 		response.Success = true
 
