@@ -21,9 +21,9 @@ import (
 )
 
 func main() {
-	c := ghasedak.NewClient("api_key", "")
+	c := ghasedak.NewClient("api_key", "xxxxxxxx")
 
-	r := c.Send("Hello, Brave new world!", "0935000000")
+	r := c.Send("Hello, Brave new world!", "09xxxxxxxx")
 	fmt.Println(r.Code)
 	fmt.Println(r.Message)
 }
