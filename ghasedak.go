@@ -36,21 +36,13 @@ func NewClient(apikey, linenumber string) Client {
 func (c *Client) SetHost(host string) {
 	c.host = host
 }
-// get status
+
+//get status
 func (c *Client) Status(id string, itype string) Response {
 	route := "http://" + c.host + "/v2/sms/status?agent=go"
 	data := strings.NewReader(fmt.Sprintf(`id=%s&type=%s`,
 		id, itype))
 
-<<<<<<< HEAD
-// get status
-func (c *Client) Status(id string, itype string) Response {
-	route := "http://" + c.host + "/v2/sms/status?agent=go"
-	data := strings.NewReader(fmt.Sprintf(`id=%s&type=%s`,
-		id, itype))
-
-=======
->>>>>>> 68c5dab7dd82b5e6966d501572a9584414cb2ca1
 	rq, err := http.NewRequest("POST", route, data)
 	if err != nil {
 		log.Println(err)
@@ -77,15 +69,8 @@ func (c *Client) Status(id string, itype string) Response {
 			log.Println(err)
 			return Response{Success: true, Message: err.Error()}
 		}
-<<<<<<< HEAD
 		bodyString := string(bodyBytes)
 		response.Message = (bodyString)
-=======
-
-		bodyString := string(bodyBytes)
-		response.Message = string(bodyBytes)
-		//  gjson.Get(bodyString, "result.message").String()
->>>>>>> 68c5dab7dd82b5e6966d501572a9584414cb2ca1
 		response.ID = gjson.Get(bodyString, "items.۰").Int()
 		response.Success = true
 
@@ -97,13 +82,98 @@ func (c *Client) Status(id string, itype string) Response {
 
 	return response
 }
-<<<<<<< HEAD
 
-=======
->>>>>>> 68c5dab7dd82b5e6966d501572a9584414cb2ca1
 // Send simple sms
 func (c *Client) Send(msg, receptor string) Response {
 	route := "http://" + c.host + "/v2/sms/send/simple?agent=go"
+	data := strings.NewReader(fmt.Sprintf(`message=%s&receptor=%s&linenumber=%s`,
+		msg, receptor, c.LineNumber))
+
+	rq, err := http.NewRequest("POST", route, data)
+	if err != nil {
+		log.Println(err)
+		return Response{Success: false, Message: err.Error()}
+	}
+	rq.Header.Set("Cache-Control", "no-cache")
+	rq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	rq.Header.Set("Apikey", c.APIKEY)
+
+	rp, err := http.DefaultClient.Do(rq)
+	if err != nil {
+		log.Println(err)
+		return Response{Success: false, Message: err.Error()}
+	}
+	defer rp.Body.Close()
+
+	response := Response{}
+
+	if rp.StatusCode == http.StatusOK {
+		response.Code = http.StatusOK
+		bodyBytes, err := ioutil.ReadAll(rp.Body)
+		if err != nil {
+			log.Println(err)
+			return Response{Success: true, Message: err.Error()}
+		}
+		bodyString := string(bodyBytes)
+		response.Message = gjson.Get(bodyString, "result.message").String()
+		response.ID = gjson.Get(bodyString, "items.۰").Int()
+		response.Success = true
+
+		return response
+	}
+
+	response.Code = rp.StatusCode
+	response.Success = false
+
+	return response
+}
+
+// Send group sms
+func (c *Client) Bulk1(msg, receptor string) Response {
+	route := "http://" + c.host + "/v2/sms/send/bulk?agent=go"
+	data := strings.NewReader(fmt.Sprintf(`message=%s&receptor=%s&linenumber=%s`,
+		msg, receptor, c.LineNumber))
+
+	rq, err := http.NewRequest("POST", route, data)
+	if err != nil {
+		log.Println(err)
+		return Response{Success: false, Message: err.Error()}
+	}
+	rq.Header.Set("Cache-Control", "no-cache")
+	rq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	rq.Header.Set("Apikey", c.APIKEY)
+
+	rp, err := http.DefaultClient.Do(rq)
+	if err != nil {
+		log.Println(err)
+		return Response{Success: false, Message: err.Error()}
+	}
+	defer rp.Body.Close()
+
+	response := Response{}
+
+	if rp.StatusCode == http.StatusOK {
+		response.Code = http.StatusOK
+		bodyBytes, err := ioutil.ReadAll(rp.Body)
+		if err != nil {
+			log.Println(err)
+			return Response{Success: true, Message: err.Error()}
+		}
+		bodyString := string(bodyBytes)
+		response.Message = gjson.Get(bodyString, "result.message").String()
+		response.ID = gjson.Get(bodyString, "items.۰").Int()
+		response.Success = true
+
+		return response
+	}
+
+	response.Code = rp.StatusCode
+	response.Success = false
+
+	return response
+}
+func (c *Client) Bulk2(msg, receptor string) Response {
+	route := "http://" + c.host + "/v2/sms/send/pair?agent=go"
 	data := strings.NewReader(fmt.Sprintf(`message=%s&receptor=%s&linenumber=%s`,
 		msg, receptor, c.LineNumber))
 

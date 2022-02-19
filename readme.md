@@ -1,16 +1,15 @@
-ghasedak-go
-===============
+# ghasedak-go
+
 [Ghasedak sms gateway](https://ghasedak.io) for golang.
 
-install
--------
+## install
 
 ```sh
 go get github.com/ghasedakapi/ghasedak-go
 ```
 
-example
--------
+## example
+
 ```go
 package main
 
@@ -29,14 +28,23 @@ func main() {
 	r := c.Send("Hello world!", "09xxxxxxxx")
 	fmt.Println(r.Code)
 	fmt.Println(r.Message)
-	
+
 	// Send group massages:
-	r := c.bulk("Hello world!", "09xxxxxxxx,09xxxxxxxx,09xxxxxxxx")
+	r := c.Bulk1("Hello world!", "09xxxxxxxx,09xxxxxxxx,09xxxxxxxx")
+	fmt.Println(r.Code)
+	fmt.Println(r.Message)
+	// -----------
+	r := c.Bulk2("Hello world!", "09xxxxxxxx,09xxxxxxxx,09xxxxxxxx")
 	fmt.Println(r.Code)
 	fmt.Println(r.Message)
 
 	// Check the status of massages:
 	r := c.Status("Massage_ID", "1")
+	fmt.Println(r.Message)
+	fmt.Println(r.Code)
+
+	// Send verification massages:
+	r := c.SendOTP("09xxxxxxxxx", "Your Template", Param1)
 	fmt.Println(r.Message)
 	fmt.Println(r.Code)
 }
