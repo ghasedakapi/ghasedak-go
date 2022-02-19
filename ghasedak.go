@@ -37,6 +37,52 @@ func (c *Client) SetHost(host string) {
 	c.host = host
 }
 
+// get status
+func (c *Client) Status(id string, itype string) Response {
+	route := "http://" + c.host + "/v2/sms/status?agent=go"
+	data := strings.NewReader(fmt.Sprintf(`id=%s&type=%s`,
+		id, itype))
+
+	rq, err := http.NewRequest("POST", route, data)
+	if err != nil {
+		log.Println(err)
+		return Response{Success: false, Message: err.Error()}
+	}
+
+	rq.Header.Set("Cache-Control", "no-cache")
+	rq.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+	rq.Header.Set("Apikey", c.APIKEY)
+
+	rp, err := http.DefaultClient.Do(rq)
+	if err != nil {
+		log.Println(err)
+		return Response{Success: false, Message: err.Error()}
+	}
+	defer rp.Body.Close()
+
+	response := Response{}
+
+	if rp.StatusCode == http.StatusOK {
+		response.Code = http.StatusOK
+		bodyBytes, err := ioutil.ReadAll(rp.Body)
+		if err != nil {
+			log.Println(err)
+			return Response{Success: true, Message: err.Error()}
+		}
+		bodyString := string(bodyBytes)
+		response.Message = (bodyString)
+		response.ID = gjson.Get(bodyString, "items.۰").Int()
+		response.Success = true
+
+		return response
+	}
+
+	response.Code = rp.StatusCode
+	response.Success = false
+
+	return response
+}
+
 // Send simple sms
 func (c *Client) Send(msg, receptor string) Response {
 	route := "http://" + c.host + "/v2/sms/send/simple?agent=go"

@@ -21,11 +21,24 @@ import (
 )
 
 func main() {
+
+	// initialize connection:
 	c := ghasedak.NewClient("api_key", "")
 
-	r := c.Send("Hello, Brave new world!", "0935000000")
+	// Send a new text massage:
+	r := c.Send("Hello world!", "09xxxxxxxx")
 	fmt.Println(r.Code)
 	fmt.Println(r.Message)
+	
+	// Send group massages:
+	r := c.bulk("Hello world!", "09xxxxxxxx,09xxxxxxxx,09xxxxxxxx")
+	fmt.Println(r.Code)
+	fmt.Println(r.Message)
+
+	// Check the status of massages:
+	r := c.Status("Massage_ID", "1")
+	fmt.Println(r.Message)
+	fmt.Println(r.Code)
 }
 
 ```
